@@ -29,8 +29,8 @@ type NarrowPhaseCallbacks =
         [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
         member this.ConfigureContactManifold<'TManifold when 'TManifold : struct and 'TManifold :> IContactManifold<'TManifold>>(_, pair, manifold: byref<'TManifold>, pairMaterial: byref<PairMaterialProperties>) =
             pairMaterial.FrictionCoefficient <- 1.0f
-            pairMaterial.MaximumRecoveryVelocity <- 2.0f
-            pairMaterial.SpringSettings <- SpringSettings(10.0f, 0.05f)
+            pairMaterial.MaximumRecoveryVelocity <- Single.MaxValue
+            pairMaterial.SpringSettings <- SpringSettings(5.0f, 0.01f)
             true
         
         [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
@@ -74,7 +74,7 @@ let createSimulation() =
             PositionLastTimestepper())
 
     let sphere = Sphere(1.0f)
-    let spherePosition = Vector3(0.0f, 5.0f, 0.0f)
+    let spherePosition = Vector3(0.0f, 10.0f, 0.0f)
     let mutable sphereInertia = BodyInertia()
     let sphereCollidable = CollidableDescription(simulation.Shapes.Add(&sphere), 0.1f)
     let sphereActivity = BodyActivityDescription(0.00f)

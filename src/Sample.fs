@@ -50,7 +50,7 @@ let draw (device: GraphicsDevice) (viewMatrix: Matrix) (projectionMatrix: Matrix
     effect.Parameters.["xProjection"].SetValue(projectionMatrix)
     effect.Parameters.["xWorld"].SetValue(Matrix.CreateTranslation(spherePos.X, spherePos.Y, spherePos.Z))
     effect.Parameters.["xAmbient"].SetValue(0.2f)
-    effect.Parameters.["xLightPosition"].SetValue(Vector3(-10.0f, 2.0f, 5.0f))
+    effect.Parameters.["xLightPosition"].SetValue(Vector3(-10.0f, 5.0f, 0.0f))
 
     effect.CurrentTechnique.Passes |> Seq.iter
         (fun pass ->
