@@ -30,7 +30,7 @@ type NarrowPhaseCallbacks =
         member this.ConfigureContactManifold<'TManifold when 'TManifold : struct and 'TManifold :> IContactManifold<'TManifold>>(_, pair, manifold: byref<'TManifold>, pairMaterial: byref<PairMaterialProperties>) =
             pairMaterial.FrictionCoefficient <- 1.0f
             pairMaterial.MaximumRecoveryVelocity <- 2.0f
-            pairMaterial.SpringSettings <- SpringSettings(30.0f, 0.25f)
+            pairMaterial.SpringSettings <- SpringSettings(10.0f, 0.05f)
             true
         
         [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
@@ -63,10 +63,10 @@ type PoseIntegratorCallbacks (gravity: Vector3) =
             else
                 ()
 
-let Run() =
-    use bufferPool = new BufferPool()
+let createSimulation() =
+    let bufferPool = new BufferPool()
 
-    use simulation =
+    let simulation =
         Simulation.Create(
             bufferPool,
             new NarrowPhaseCallbacks(),
@@ -89,9 +89,13 @@ let Run() =
     let sphereRef = simulation.Bodies.GetBodyReference(simulation.Bodies.Add(&sphereDescription))
     simulation.Statics.Add(&boxDescription) |> ignore
 
+    simulation, sphereRef
+
+let Run() =
+    let simulation, sphereRef = createSimulation()
+
     for i in 0 .. 199 do
         simulation.Timestep(0.01f)
         printfn "%0.3f" sphereRef.Pose.Position.Y
-
 
     ()

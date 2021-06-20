@@ -16,13 +16,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Content\effects.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Compile Include="SimpleThreadDispatcher.fs" />
     <Compile Include="SimpleSelfContainedDemo.fs" />
+    <Compile Include="Input.fs" />
+    <Compile Include="VertexPositionNormalColour.fs" />
+    <Compile Include="Sphere.fs" />
+    <Compile Include="Sample.fs" />
+    <Compile Include="Game.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BepuPhysics" Version="2.3.0" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
   </ItemGroup>
 
 </Project>

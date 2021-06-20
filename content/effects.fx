@@ -4,18 +4,11 @@ float4x4 xWorld;
 float xAmbient;
 float3 xLightPosition;
 
-float xCubeIndex;
-float xFaceTag;
-float xCubeTag;
-float xTagScale;
-float xHighlightIntensity;
-
 struct VertexShaderInput
 {
     float4 Position	: SV_POSITION;
 	float3 Normal : NORMAL;
     float4 Colour : COLOR0;
-	float Tag : TEXCOORD0;
 };
 
 struct VertexToPixel
@@ -24,7 +17,6 @@ struct VertexToPixel
 	float3 WorldPosition: TEXCOORD0;
 	float3 Normal : NORMAL;
 	float4 Colour : COLOR0;
-	bool IsHighlighted: TEXCOORD1;
 };
 
 struct PixelToFrame
@@ -45,7 +37,6 @@ VertexToPixel CubeVS(VertexShaderInput input)
 	output.WorldPosition = mul(input.Position, xWorld).rgb;
 	output.Normal = normal;
 	output.Colour = input.Colour;
-	output.IsHighlighted = abs(xFaceTag - input.Tag) < 0.01 && abs(xCubeTag - xCubeIndex) < 0.01;
 
 	return output;
 }
@@ -57,11 +48,8 @@ PixelToFrame CubePS(VertexToPixel input)
 	float3 lightDirection = normalize(input.WorldPosition - xLightPosition);
 	float3 normal = normalize(input.Normal);
 	float lightingFactor = saturate(dot(normal, -lightDirection)) * 1.0 + xAmbient;
-	float4 colour = float4(input.Colour.rgb * lightingFactor, input.Colour.a);
 
-	float highlightIntensity = input.IsHighlighted ? xHighlightIntensity : 0.0;
-
-	output.Colour = lerp(colour, float4(1.0, 1.0, 1.0, 1.0), highlightIntensity);
+	output.Colour = float4(input.Colour.rgb * lightingFactor, input.Colour.a);
 
 	return output;
 }
@@ -72,53 +60,5 @@ technique Cube
 	{
 		VertexShader = compile vs_4_0 CubeVS();
 		PixelShader = compile ps_4_0 CubePS();
-	}
-}
-
-/// Picker
-
-struct PickerVertexToPixel
-{
-	float4 Position : SV_POSITION;
-	float2 Colour : COLOR0;	
-};
-
-struct PickerPixelToFrame
-{
-	float4 Colour   : COLOR0;
-};
-
-PickerVertexToPixel PickerVS(VertexShaderInput input)
-{
-	PickerVertexToPixel output;
-
-	float4x4 preViewProjection = mul(xView, xProjection);
-	float4x4 preWorldViewProjection = mul(xWorld, preViewProjection);
-
-	output.Position = mul(input.Position, preWorldViewProjection);
-
-	output.Colour.r = xCubeIndex / xTagScale;
-	output.Colour.g = input.Tag / xTagScale;
-
-	return output;
-}
-
-PickerPixelToFrame PickerPS(PickerVertexToPixel input)
-{
-	PickerPixelToFrame output;
-
-	output.Colour.rg = input.Colour;
-	output.Colour.b = 0.0;
-	output.Colour.a = 1.0;
-
-	return output;
-}
-
-technique Picker
-{
-	pass Pass0
-	{
-		VertexShader = compile vs_4_0 PickerVS();
-		PixelShader = compile ps_4_0 PickerPS();
 	}
 }
