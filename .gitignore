@@ -219,7 +219,7 @@ paket-files/
 
 # MonoGame
 intermediateContent/
-src/content/
+**/*.xnb
 
 # Ionide
 .ionide/
