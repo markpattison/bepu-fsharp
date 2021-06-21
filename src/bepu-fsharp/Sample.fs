@@ -10,6 +10,7 @@ type Content =
         SphereIndices: int []
         Simulation: BepuPhysics.Simulation
         SphereRef: BepuPhysics.BodyReference
+        ThreadDispatcher: BepuUtilities.IThreadDispatcher
     }
 
 let loadContent (this: Game) device =
@@ -20,6 +21,8 @@ let loadContent (this: Game) device =
 
     let simulation, sphereRef = SimpleSelfContainedDemo.createSimulation()
 
+    let threadDispatcher = new SimpleThreadDispatcher(System.Environment.ProcessorCount)
+
     {
         Effect = this.Content.Load<Effect>("effects")
         SphereVertices = sphereVertices
@@ -27,13 +30,14 @@ let loadContent (this: Game) device =
 
         Simulation = simulation
         SphereRef = sphereRef
+        ThreadDispatcher = threadDispatcher
     }
 
 let update (gameTime: GameTime) content =
     let dt = single gameTime.ElapsedGameTime.TotalSeconds
 
     if dt > 0.0f then
-        content.Simulation.Timestep(dt)
+        content.Simulation.Timestep(dt, content.ThreadDispatcher)
 
     content
 
