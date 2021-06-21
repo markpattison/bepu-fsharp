@@ -74,25 +74,25 @@ let createSimulation() =
             PositionLastTimestepper())
 
     let sphere = Sphere(1.0f)
-    let spherePosition = Vector3(0.0f, 10.0f, 0.0f)
+    let spherePosition = Vector3(-2.6f, 10.0f, 0.0f)
     let mutable sphereInertia = BodyInertia()
     let sphereCollidable = CollidableDescription(simulation.Shapes.Add(&sphere), 0.1f)
     let sphereActivity = BodyActivityDescription(0.00f)
     sphere.ComputeInertia(1.0f, &sphereInertia)
     let sphereDescription = BodyDescription.CreateDynamic(&spherePosition, &sphereInertia, &sphereCollidable, &sphereActivity)
 
-    let box = Box(500.0f, 1.0f, 500.0f)
+    let box = Box(5.0f, 1.0f, 5.0f)
     let boxPosition = Vector3.Zero
     let boxCollidable = CollidableDescription(simulation.Shapes.Add(&box), 0.1f)
     let boxDescription = StaticDescription(&boxPosition, &boxCollidable)
 
     let sphereRef = simulation.Bodies.GetBodyReference(simulation.Bodies.Add(&sphereDescription))
-    simulation.Statics.Add(&boxDescription) |> ignore
+    let boxRef = simulation.Statics.GetStaticReference(simulation.Statics.Add(&boxDescription))
 
-    simulation, sphereRef
+    simulation, sphereRef, boxRef
 
 let Run() =
-    let simulation, sphereRef = createSimulation()
+    let simulation, sphereRef, boxRef = createSimulation()
 
     for i in 0 .. 199 do
         simulation.Timestep(0.01f)

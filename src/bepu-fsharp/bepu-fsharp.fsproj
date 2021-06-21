@@ -22,6 +22,7 @@
     <Compile Include="SimpleSelfContainedDemo.fs" />
     <Compile Include="Input.fs" />
     <Compile Include="VertexPositionNormalColour.fs" />
+    <Compile Include="Cube.fs" />
     <Compile Include="Sphere.fs" />
     <Compile Include="Sample.fs" />
     <Compile Include="Game.fs" />
