@@ -1,11 +1,13 @@
 ﻿module BepuTest.Sample
 
 open Microsoft.Xna.Framework
+open Microsoft.Xna.Framework.Audio
 open Microsoft.Xna.Framework.Graphics
 
 type Content =
     {
         Effect: Effect
+        SoundEffect: SoundEffect
         SphereVertices: VertexPositionNormalColour []
         SphereIndices: int []
         CubeVertices: VertexPositionNormalColour []
@@ -22,12 +24,14 @@ let loadContent (this: Game) device =
         Sphere.create 2
         |> Sphere.getVerticesAndIndices Sphere.Smooth Sphere.OutwardFacing
 
-    let simulation, sphereRef, boxRef = SimpleSelfContainedDemo.createSimulation()
+    let soundEffect = this.Content.Load<SoundEffect>("Free_Low-Crashy-Metal-Hit_ATTBE01103")
+    let simulation, sphereRef, boxRef = SimpleSelfContainedDemo.createSimulation (printfn "sound"; fun () -> soundEffect.Play() |> ignore)
 
     let threadDispatcher = new SimpleThreadDispatcher(System.Environment.ProcessorCount)
 
     {
         Effect = this.Content.Load<Effect>("effects")
+        SoundEffect = soundEffect
         SphereVertices = sphereVertices
         SphereIndices = sphereIndices
         CubeVertices = Cube.vertices Color.Green

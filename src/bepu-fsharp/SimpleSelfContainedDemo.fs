@@ -14,6 +14,12 @@ open System.Text
 
 [<Struct>]
 type NarrowPhaseCallbacks =
+    val collisionCallback : obj
+    member private this.OnCollision() =
+        match this.collisionCallback with | :? (unit -> unit) as cb -> cb() | _ -> ()
+
+    new(x: unit -> unit) = { collisionCallback = x }
+
     interface INarrowPhaseCallbacks with
 
         member this.Initialize _ = ()
@@ -31,6 +37,9 @@ type NarrowPhaseCallbacks =
             pairMaterial.FrictionCoefficient <- 1.0f
             pairMaterial.MaximumRecoveryVelocity <- Single.MaxValue
             pairMaterial.SpringSettings <- SpringSettings(5.0f, 0.01f)
+
+            if manifold.GetDepth(ref manifold, 0) >= 0.0f then this.OnCollision()
+
             true
         
         [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
@@ -63,18 +72,20 @@ type PoseIntegratorCallbacks (gravity: Vector3) =
             else
                 ()
 
-let createSimulation() =
+let createSimulation onCollision =
     let bufferPool = new BufferPool()
+
+    let narrowPhaseCallBacks = new NarrowPhaseCallbacks(onCollision)
 
     let simulation =
         Simulation.Create(
             bufferPool,
-            new NarrowPhaseCallbacks(),
+            narrowPhaseCallBacks,
             PoseIntegratorCallbacks(Vector3(0.0f, -10.0f, 0.0f)),
             PositionLastTimestepper())
 
     let sphere = Sphere(1.0f)
-    let spherePosition = Vector3(-2.6f, 10.0f, 0.0f)
+    let spherePosition = Vector3(-2.8f, 10.0f, 0.0f)
     let mutable sphereInertia = BodyInertia()
     let sphereCollidable = CollidableDescription(simulation.Shapes.Add(&sphere), 0.1f)
     let sphereActivity = BodyActivityDescription(0.00f)
@@ -92,7 +103,7 @@ let createSimulation() =
     simulation, sphereRef, boxRef
 
 let Run() =
-    let simulation, sphereRef, boxRef = createSimulation()
+    let simulation, sphereRef, boxRef = createSimulation (fun () -> ())
 
     for i in 0 .. 199 do
         simulation.Timestep(0.01f)
