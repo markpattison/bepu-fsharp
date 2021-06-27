@@ -25,7 +25,7 @@ let loadContent (this: Game) device =
         |> Sphere.getVerticesAndIndices Sphere.Smooth Sphere.OutwardFacing
 
     let soundEffect = this.Content.Load<SoundEffect>("Free_Low-Crashy-Metal-Hit_ATTBE01103")
-    let simulation, sphereRef, boxRef = SimpleSelfContainedDemo.createSimulation (printfn "sound"; fun () -> soundEffect.Play() |> ignore)
+    let simulation, sphereRef, boxRef = SimpleSelfContainedDemo.createSimulation (fun () -> soundEffect.Play() |> ignore)
 
     let threadDispatcher = new SimpleThreadDispatcher(System.Environment.ProcessorCount)
 
